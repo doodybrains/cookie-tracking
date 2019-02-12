@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<script src="md5.min.js"></script>
+		<!-- https://github.com/blueimp/JavaScript-MD5 -->
+		<style>
+			body {
+				 font-family: monospace; 
+				 font-size: 24px; 
+				 word-wrap:break-word;
+			}
+			#signature {
+				border: 2px solid hotpink;
+			}
+		</style>
+		<script type="text/javascript">
+		
+			var lastlogin = new Date(<%= session.lastvisit %>);
+			
+			window.addEventListener('load', function() {
+				document.getElementById('lastlogin').innerHTML = lastlogin.toDateString();				
+				
+				// Canvas Fingerprint
+				var c = document.getElementById("c");
+				var ctx = c.getContext("2d");
+				ctx.fillStyle = 'mediumpurple';
+				ctx.fillRect(10, 10, 80, 80);
+					
+				var base64 = c.toDataURL();
+				var signature = md5(base64);
+				console.log(signature);
+				document.getElementById('signature').innerHTML = `signature: ${signature}`;
+			});
+			
+		
+		</script>
+	</head>
+
+	<body>
+		<b>Welcome! <%= session.uuid %> 
+		<br />
+		you last visited in <span id="lastlogin"><%= session.lastvisit %></span>, 
+		<br />
+		You have visited <%= session.visits %> times.</b>
+		<br />
+		<br />
+		<% if (headers.dnt == "1") { %>
+			You said "Do Not Track" but I don't care
+		<% } else { %>
+			You didn't say anything about "Do Not Track"
+		<% } %>
+		<br />
+		<br />
+		<canvas id="c" width="100" height="100">Your browser does not support the canvas element.</canvas>
+		<br />
+		<br />
+		<br />
+		<br />
+		<div id="signature"></div>
+		<br />
+		<br />		
+		Here is some more information I know about you:
+		<br />
+		<%= JSON.stringify(headers); %>
+		<br />
+	</body>
+</html>	
